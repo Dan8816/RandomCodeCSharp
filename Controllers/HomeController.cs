@@ -5,15 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Web;
 using RandomCode.Models;
 
 namespace RandomCode.Controllers
 {
     public class HomeController : Controller
     {
+        public int counter = 1;
+
         public IActionResult Index()
         {
-            ViewData["Message"] = "Random passcode (passcode # )";
             ViewData["passcode"] = HttpContext.Session.GetString("passcode");
             return View();
         }
@@ -21,7 +23,17 @@ namespace RandomCode.Controllers
         [HttpPost("Generate")]
         public IActionResult Generate()
         {
-            System.Console.WriteLine("hit the generate route");
+
+            if (HttpContext.Session.GetInt32("Counter")==null)
+            {
+                HttpContext.Session.SetInt32("Counter", 0);
+            }
+            counter = (int)HttpContext.Session.GetInt32("Counter");
+            counter++;
+            HttpContext.Session.SetInt32("Counter", counter);
+            int? IntVariable = HttpContext.Session.GetInt32("Counter");
+            TempData["Counter"] = IntVariable;
+
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var stringChars = new char[14];
             var random = new Random();
